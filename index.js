@@ -97,6 +97,20 @@ function getLearnerData(courseInfo, assignmentGroup, learnerSubmissions) {
         });
       }
     });
+
+    assignmentGroup.assignments.forEach((assignment) => {
+      try {
+        if (assignment.points_possible <= 0) {
+          throw new Error(
+            'The input was invalid - points_possible is not positive.'
+          );
+        }
+
+        // ...
+      } catch (error) {
+        console.log(error.message);
+      }
+    });
   } catch (error) {
     console.log(error.message);
   }
