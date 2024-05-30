@@ -78,27 +78,32 @@ const LearnerSubmissions = [
 
 function getLearnerData(courseInfo, assignmentGroup, learnerSubmissions) {
   try {
+    // check if the course_id in the assignmentGroup matches the course_id in the courseInfo
     if (courseInfo.id !== assignmentGroup.course_id) {
       throw new Error('The input was invalid - course_id does not match.');
     }
+
+    // create an array to store the result
+    const result = [];
+
+    learnerSubmissions.forEach((submission) => {
+      // check if the learner is already in the result array
+      const learner = findLearner(result, submission.learner_id);
+
+      // if the learner is not in the result array, add the learner
+      if (!learner) {
+        result.push({
+          id: submission.learner_id,
+        });
+      }
+    });
   } catch (error) {
     console.log(error.message);
   }
 
-  // const result = [
-  //   {
-  //     id: 125,
-  //     avg: 0.985, // (47 + 150) / (50 + 150)
-  //     1: 0.94, // 47 / 50
-  //     2: 1.0, // 150 / 150
-  //   },
-  //   {
-  //     id: 132,
-  //     avg: 0.82, // (39 + 125) / (50 + 150)
-  //     1: 0.78, // 39 / 50
-  //     2: 0.833, // late: (140 - 15) / 150
-  //   },
-  // ];
+  function findLearner(result, learnerId) {
+    return result.find((learner) => learner.id === learnerId);
+  }
 
   // return result;
 }
