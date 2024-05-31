@@ -115,12 +115,8 @@ function getLearnerData(courseInfo, assignmentGroup, learnerSubmissions) {
 
             // if the learner exists, calculate the score and update the learner object
             if (learner) {
-              learner[assignment.id] = (
-                (new Date(submission.submission.submitted_at) >
-                new Date(assignment.due_at)
-                  ? parseFloat(submission.submission.score) * 0.9
-                  : submission.submission.score) / assignment.points_possible
-              ).toFixed(2);
+              const score = calculateScore(submission, assignment);
+              learner[assignment.id] = score;
             }
           }
         });
@@ -150,8 +146,25 @@ function getLearnerData(courseInfo, assignmentGroup, learnerSubmissions) {
     console.log(error.message);
   }
 
+  // helper functions
+
+  // find a learner in the result array by id
   function findLearner(result, learnerId) {
     return result.find((learner) => learner.id === learnerId);
+  }
+
+  // calculate the score for a submission based on the assignment
+  function calculateScore(submission, assignment) {
+    const submittedAt = new Date(submission.submission.submitted_at);
+    const dueAt = new Date(assignment.due_at);
+    const isLate = submittedAt > dueAt;
+    const pointsPossible = assignment.points_possible;
+    const score = (
+      (isLate
+        ? submission.submission.score * 0.9
+        : submission.submission.score) / pointsPossible
+    ).toFixed(2);
+    return score;
   }
 }
 
