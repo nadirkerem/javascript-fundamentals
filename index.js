@@ -38,6 +38,7 @@ function getLearnerData(courseInfo, assignmentGroup, learnerSubmissions) {
           );
         }
 
+        // iterate over the learnerSubmissions
         learnerSubmissions.forEach((submission) => {
           if (submission.assignment_id === assignment.id) {
             // find the learner in the result array
