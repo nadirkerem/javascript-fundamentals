@@ -91,6 +91,11 @@ function getLearnerData(courseInfo, assignmentGroup, learnerSubmissions) {
       // check if the learner is already in the result array
       const learner = findLearner(result, learnerSubmissions[i].learner_id);
 
+      // if the learner is in the result array, skip to the next iteration
+      if (learner) {
+        continue;
+      }
+
       // if the learner is not in the result array, add the learner
       if (!learner) {
         result.push({
