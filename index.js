@@ -86,17 +86,18 @@ function getLearnerData(courseInfo, assignmentGroup, learnerSubmissions) {
     // create an array to store the result
     const result = [];
 
-    learnerSubmissions.forEach((submission) => {
+    // iterate over the learnerSubmissions
+    for (let i = 0; i < learnerSubmissions.length; i++) {
       // check if the learner is already in the result array
-      const learner = findLearner(result, submission.learner_id);
+      const learner = findLearner(result, learnerSubmissions[i].learner_id);
 
       // if the learner is not in the result array, add the learner
       if (!learner) {
         result.push({
-          id: submission.learner_id,
+          id: learnerSubmissions[i].learner_id,
         });
       }
-    });
+    }
 
     // iterate over the assignments in the assignmentGroup
     assignmentGroup.assignments.forEach((assignment) => {
@@ -115,7 +116,7 @@ function getLearnerData(courseInfo, assignmentGroup, learnerSubmissions) {
 
             // if the learner exists, calculate the score and update the learner object
             if (learner) {
-              const score = calculateScore(submission, assignment);
+              let score = calculateScore(submission, assignment);
               learner[assignment.id] = score;
             }
           }
@@ -138,6 +139,8 @@ function getLearnerData(courseInfo, assignmentGroup, learnerSubmissions) {
           assignmentScores.reduce((acc, score) => acc + parseFloat(score), 0) /
           assignmentScores.length
         ).toFixed(2);
+      } else {
+        learner.avg = 'N/A';
       }
     });
 
@@ -146,7 +149,7 @@ function getLearnerData(courseInfo, assignmentGroup, learnerSubmissions) {
     console.log(error.message);
   }
 
-  // helper functions
+  // helper functions for better readability
 
   // find a learner in the result array by id
   function findLearner(result, learnerId) {
