@@ -98,19 +98,54 @@ function getLearnerData(courseInfo, assignmentGroup, learnerSubmissions) {
       }
     });
 
+    // iterate over the assignments in the assignmentGroup
     assignmentGroup.assignments.forEach((assignment) => {
       try {
+        // check if points_possible is positive
         if (assignment.points_possible <= 0) {
           throw new Error(
             'The input was invalid - points_possible is not positive.'
           );
         }
 
-        // ...
+        learnerSubmissions.forEach((submission) => {
+          if (submission.assignment_id === assignment.id) {
+            // find the learner in the result array
+            const learner = findLearner(result, submission.learner_id);
+
+            // if the learner exists, calculate the score and update the learner object
+            if (learner) {
+              learner[assignment.id] = (
+                (new Date(submission.submission.submitted_at) >
+                new Date(assignment.due_at)
+                  ? parseFloat(submission.submission.score) * 0.9
+                  : submission.submission.score) / assignment.points_possible
+              ).toFixed(2);
+            }
+          }
+        });
       } catch (error) {
         console.log(error.message);
       }
     });
+
+    // iterate over the result array to calculate the average score
+    result.forEach((learner) => {
+      // filter out the assignment scores from the learner object
+      const assignmentScores = Object.values(learner).filter(
+        (value) => typeof value === 'string'
+      );
+
+      // calculate the average score if there are assignment scores
+      if (assignmentScores.length > 0) {
+        learner.avg = (
+          assignmentScores.reduce((acc, score) => acc + parseFloat(score), 0) /
+          assignmentScores.length
+        ).toFixed(2);
+      }
+    });
+
+    return result;
   } catch (error) {
     console.log(error.message);
   }
@@ -118,8 +153,6 @@ function getLearnerData(courseInfo, assignmentGroup, learnerSubmissions) {
   function findLearner(result, learnerId) {
     return result.find((learner) => learner.id === learnerId);
   }
-
-  // return result;
 }
 
 const result = getLearnerData(CourseInfo, AssignmentGroup, LearnerSubmissions);
